@@ -29,3 +29,5 @@
 ```
 
 截图：
+
+![](https://github.com/yeshuwei/ArcProgressView/blob/master/device-2018-09-25-154520.png)
