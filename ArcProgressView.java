@@ -102,7 +102,6 @@ public class ArcProgressView extends View {
      */
     private List<Paint> arcPaints = new ArrayList<>();
     private List<Line> mLines = new ArrayList<>();
-    private List<Line> mOriginalLines = new ArrayList<>();
 
     private float mProgress = 1f;
 
@@ -190,9 +189,6 @@ public class ArcProgressView extends View {
         if (lines.size() <= 0) {
             return;
         }
-
-        mOriginalLines.clear();
-        mOriginalLines.addAll(lines);
 
         boolean needSpace = lines.size() > 1;
 
@@ -335,7 +331,6 @@ public class ArcProgressView extends View {
 
     /**
      * 顺序不能打乱
-     *
      * @param canvas
      * @param rectF
      */
