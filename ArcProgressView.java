@@ -178,11 +178,17 @@ public class ArcProgressView extends View {
      * @param lines
      */
     public void setLine(List<Line> lines) {
+        if (lines == null) {
+            return;
+        }
         //安全起见 先剔除空数据
         for (Iterator<Line> itr = lines.iterator(); itr.hasNext(); ) {
             if (itr.next() == null) {
                 itr.remove();
             }
+        }
+        if (lines.size() <= 0) {
+            return;
         }
 
         mOriginalLines.clear();
@@ -190,13 +196,15 @@ public class ArcProgressView extends View {
 
         boolean needSpace = lines.size() > 1;
 
+        lines.get(0).setType(LineType.ROUND_BUTT);
+
         if (needSpace) {
-            //最后特殊增加两个line
-            lines.get(0).setType(LineType.ROUND_BUTT);
+            //特殊增加两个line
             lines.get(lines.size() - 1).setType(LineType.BUTT_ROUND);
             lines.add(1, new Line(lines.get(0).color, lines.get(0).colors, LineType.PREVIOUS_BUTT));
             lines.add(lines.size() - 1, new Line(lines.get(lines.size() - 1).color, lines.get(lines.size() - 1).colors, LineType.NEX_BUTT));
         }
+
 
         float percentTotal = 0.0f;
         float firstPercent = lines.get(0).percent;
@@ -218,22 +226,28 @@ public class ArcProgressView extends View {
                 line.percent = mProgress - percentTotal;
             }
 
-            if (line.getType() == LineType.ROUND_BUTT) {
-                start = startAngle + sweepRange * percentTotal;
-                sweep = sweepRange * line.percent / 2;
-            } else if (line.getType() == LineType.PREVIOUS_BUTT) {
-                start = startAngle + sweepRange * (percentTotal - firstPercent / 2);
-                sweep = sweepRange * firstPercent / 2;
-            } else if (line.getType() == LineType.NEX_BUTT) {
-                start = startAngle + sweepRange * (percentTotal + spacePercent / 2);
-                sweep = sweepRange * lastPercent / 2;
-            } else if (line.getType() == LineType.BUTT_ROUND) {
-                start = startAngle + sweepRange * (percentTotal + line.percent / 2);
-                sweep = sweepRange * line.percent / 2;
+            if (needSpace) {
+                if (line.getType() == LineType.ROUND_BUTT) {
+                    start = startAngle + sweepRange * percentTotal;
+                    sweep = sweepRange * line.percent / 2;
+                } else if (line.getType() == LineType.PREVIOUS_BUTT) {
+                    start = startAngle + sweepRange * (percentTotal - firstPercent / 2);
+                    sweep = sweepRange * firstPercent / 2;
+                } else if (line.getType() == LineType.NEX_BUTT) {
+                    start = startAngle + sweepRange * (percentTotal + spacePercent / 2);
+                    sweep = sweepRange * lastPercent / 2;
+                } else if (line.getType() == LineType.BUTT_ROUND) {
+                    start = startAngle + sweepRange * (percentTotal + line.percent / 2);
+                    sweep = sweepRange * line.percent / 2;
+                } else {
+                    start = startAngle + sweepRange * (percentTotal + spacePercent / 2);
+                    sweep = sweepRange * (line.percent - spacePercent / 2);
+                }
             } else {
-                start = startAngle + sweepRange * (percentTotal + spacePercent / 2);
-                sweep = sweepRange * (line.percent - spacePercent / 2);
+                start = startAngle;
+                sweep = sweepRange * line.percent;
             }
+
             percentTotal += line.percent;
 
             line.setStart(start);
