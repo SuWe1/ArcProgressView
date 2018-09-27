@@ -1,12 +1,10 @@
 package com.example.swyww.testproject;
 
-import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.LinearGradient;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -16,7 +14,6 @@ import android.graphics.SweepGradient;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 
@@ -106,6 +103,10 @@ public class ArcProgressView extends View {
     private float mProgress = 1f;
 
     private Matrix mMatrix;
+
+    private float maxBodySize;
+
+    private float maxHeadSize;
 
     public ArcProgressView(Context context) {
         super(context);
@@ -319,6 +320,36 @@ public class ArcProgressView extends View {
         centerX = getWidth() / 2;
         centerY = getHeight() / 2;
 
+        maxBodySize = getWidth() - getPaddingLeft() - getPaddingRight() - bgStrokeWidth * 2 - 50;
+
+        maxHeadSize = getWidth() - getPaddingLeft() - getPaddingRight() - bgStrokeWidth * 2 - 70;
+
+    }
+
+    /**
+     * 自动调整字体大小
+     */
+    private void autoFitBodySize() {
+        if (TextUtils.isEmpty(bodyText)) {
+            return;
+        }
+        float bodySize = bodyPaint.getTextSize();
+
+        while (bodyPaint.measureText(bodyText) > maxBodySize) {
+            bodySize--;
+            bodyPaint.setTextSize(bodySize);
+        }
+    }
+
+    private void autoFitHeadSize() {
+        if (TextUtils.isEmpty(headText)) {
+            return;
+        }
+        float headSize = headPaint.getTextSize();
+        while (headPaint.measureText(headText) > maxHeadSize) {
+            headSize--;
+            headPaint.setTextSize(headSize);
+        }
     }
 
     @Override
@@ -370,6 +401,9 @@ public class ArcProgressView extends View {
     private void drawText(Canvas canvas) {
         boolean noHeadText = TextUtils.isEmpty(headText);
         boolean noBodyText = TextUtils.isEmpty(bodyText);
+
+        autoFitBodySize();
+        autoFitHeadSize();
 
         if (noBodyText && noHeadText) {
             return;
